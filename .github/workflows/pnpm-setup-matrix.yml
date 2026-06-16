@@ -31,5 +31,12 @@ jobs:
           echo "runtime: ${{ steps.setup.outputs.runtime-name }} ${{ steps.setup.outputs.runtime-version }}"
           node --version
 
+      - name: Explain skipped test
+        if: matrix.node != 24
+        run: |
+          echo "Skipping pnpm test because package.json requires Node.js 24.16.0."
+          echo "This matrix job only verifies that pnpm/setup installed Node.js ${{ matrix.node }} and pnpm successfully."
+
       - name: Run tests
+        if: matrix.node == 24
         run: pnpm test
