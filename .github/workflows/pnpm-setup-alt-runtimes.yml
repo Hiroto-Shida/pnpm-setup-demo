@@ -1,0 +1,38 @@
+name: pnpm/setup alt runtimes
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - runtime: bun@latest
+            command: bun --version
+          - runtime: deno@2
+            command: deno --version
+
+    steps:
+      # ワークフロー実行対象のソースを取得する。
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # with.runtime を使って Bun / Deno を明示指定し、pnpm install はスキップする。
+      - name: Setup pnpm and ${{ matrix.runtime }}
+        id: setup
+        uses: pnpm/setup@v1
+        with:
+          runtime: ${{ matrix.runtime }}
+          install: false
+
+      # setup の outputs と、matrix で切り替えた runtime コマンドの両方で導入結果を確認する。
+      - name: Show installed versions
+        run: |
+          echo "pnpm: $(pnpm --version)"
+          echo "runtime: ${{ steps.setup.outputs.runtime-name }} ${{ steps.setup.outputs.runtime-version }}"
+          ${{ matrix.command }}

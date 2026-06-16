@@ -1,0 +1,38 @@
+name: pnpm/setup cache
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ワークフロー実行対象のソースを取得する。
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # package.json の定義を使ってセットアップしつつ、pnpm ストアキャッシュも有効にする。
+      - name: Setup pnpm with cache
+        id: setup
+        uses: pnpm/setup@v1
+        with:
+          cache: true
+
+      # setup の outputs と実コマンドの両方で、実際に入ったバージョンを確認する。
+      - name: Show installed versions
+        run: |
+          echo "pnpm: $(pnpm --version)"
+          echo "runtime: ${{ steps.setup.outputs.runtime-name }} ${{ steps.setup.outputs.runtime-version }}"
+          case "${{ steps.setup.outputs.runtime-name }}" in
+            node) node --version ;;
+            bun) bun --version ;;
+            deno) deno --version ;;
+          esac
+
+      # 自動 install 済みの依存関係を使ってテストを実行する。
+      - name: Run tests
+        run: pnpm test

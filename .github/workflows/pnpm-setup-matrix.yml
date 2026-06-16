@@ -1,0 +1,46 @@
+name: pnpm/setup node matrix
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22, 24]
+
+    steps:
+      # ワークフロー実行対象のソースを取得する。
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # with.runtime で Node.js の複数バージョンを切り替え、pnpm install は自動実行しない。
+      - name: Setup pnpm and Node.js ${{ matrix.node }}
+        id: setup
+        uses: pnpm/setup@v1
+        with:
+          runtime: node@${{ matrix.node }}
+          install: false
+
+      # setup の outputs と node --version の両方で、実際に入ったバージョンを確認する。
+      - name: Show installed versions
+        run: |
+          echo "pnpm: $(pnpm --version)"
+          echo "runtime: ${{ steps.setup.outputs.runtime-name }} ${{ steps.setup.outputs.runtime-version }}"
+          node --version
+
+      # package.json が Node.js 24.16.0 固定なので、20 と 22 は setup 検証だけにする。
+      - name: Explain skipped test
+        if: matrix.node != 24
+        run: |
+          echo "Skipping pnpm test because package.json requires Node.js 24.16.0."
+          echo "This matrix job only verifies that pnpm/setup installed Node.js ${{ matrix.node }} and pnpm successfully."
+
+      # package.json の runtime 条件を満たす 24 系だけ、実際に pnpm test まで流す。
+      - name: Run tests
+        if: matrix.node == 24
+        run: pnpm test
