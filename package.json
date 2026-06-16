@@ -1,0 +1,15 @@
+{
+  "name": "zenn-pnpm-setup",
+  "private": true,
+  "packageManager": "pnpm@11.7.0",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.16.0",
+      "onFail": "error"
+    }
+  },
+  "scripts": {
+    "test": "node --eval \"console.log('pnpm test OK:', process.version)\""
+  }
+}
