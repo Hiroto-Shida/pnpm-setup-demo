@@ -27,6 +27,7 @@ jobs:
         with:
           runtime: ${{ matrix.runtime }}
           version: 11.7.0
+          install: false
 
       - name: Show installed versions
         run: |

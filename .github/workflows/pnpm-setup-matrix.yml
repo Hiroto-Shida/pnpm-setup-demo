@@ -23,6 +23,7 @@ jobs:
         with:
           runtime: node@${{ matrix.node }}
           version: 11.7.0
+          install: false
 
       - name: Show installed versions
         run: |
