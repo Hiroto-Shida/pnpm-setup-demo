@@ -11,15 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ワークフロー実行対象のソースを取得する。
       - name: Checkout
         uses: actions/checkout@v6
 
+      # pnpm と runtime だけを用意し、pnpm install は自動実行しない。
       - name: Setup pnpm without install
         id: setup
         uses: pnpm/setup@v1
         with:
           install: false
 
+      # setup の outputs と実コマンドの両方で、実際に入ったバージョンを確認する。
       - name: Show installed versions
         run: |
           echo "pnpm: $(pnpm --version)"
@@ -30,5 +33,6 @@ jobs:
             deno) deno --version ;;
           esac
 
+      # node_modules が不要な pnpm audit を、install: false の例として実行する。
       - name: Run audit
         run: pnpm audit

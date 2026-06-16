@@ -18,17 +18,19 @@ jobs:
             command: deno --version
 
     steps:
+      # ワークフロー実行対象のソースを取得する。
       - name: Checkout
         uses: actions/checkout@v6
 
+      # with.runtime を使って Bun / Deno を明示指定し、pnpm install はスキップする。
       - name: Setup pnpm and ${{ matrix.runtime }}
         id: setup
         uses: pnpm/setup@v1
         with:
           runtime: ${{ matrix.runtime }}
-          version: 11.7.0
           install: false
 
+      # setup の outputs と、matrix で切り替えた runtime コマンドの両方で導入結果を確認する。
       - name: Show installed versions
         run: |
           echo "pnpm: $(pnpm --version)"
