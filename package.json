@@ -1,8 +1,12 @@
 {
   "name": "zenn-pnpm-setup",
   "private": true,
-  "packageManager": "pnpm@11.7.0",
   "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.7.0",
+      "onFail": "error"
+    },
     "runtime": {
       "name": "node",
       "version": "24.16.0",

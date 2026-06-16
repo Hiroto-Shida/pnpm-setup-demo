@@ -1,0 +1,36 @@
+name: pnpm/setup devEngines.packageManager
+
+on:
+  pull_request:
+    branches:
+      - feature/actions
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ワークフロー実行対象のソースを取得する。
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # packageManager フィールドなしで devEngines.packageManager からバージョンを解決して pnpm をセットアップする。
+      - name: Setup pnpm via devEngines.packageManager
+        id: setup
+        uses: pnpm/setup@v1
+        with:
+          install: false
+
+      # devEngines.packageManager で指定したバージョンが入っているか確認する。
+      - name: Show installed pnpm version
+        run: |
+          echo "pnpm: $(pnpm --version)"
+          echo "runtime: ${{ steps.setup.outputs.runtime-name }} ${{ steps.setup.outputs.runtime-version }}"
+          node --version
+
+      # テストを実行して環境が正常に動作することを確認する。
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run tests
+        run: pnpm test
